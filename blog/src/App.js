@@ -39,12 +39,22 @@ function App() {
                             따봉변경(copy)
                         }}>👍</span> {따봉[i]} </h4>
                         <p>2월 17일 발행</p>
+                    <button onClick={()=>{
+                        let copy = [...글제목];
+                        copy.splice(i,1);
+                        글제목변경(copy);
+                    }}>삭제</button>
                     </div>)
             })}
-            <input type="type"/>
-            <input type="button" value={"발행"} onClick={() => {
-
+            <input type="type" onChange={(e)=> {
+                입력값변경(e.target.value);
             }}/>
+            <button onClick={()=>{
+                let copy = [...글제목];
+                copy.unshift(입력값);
+                글제목변경(copy);
+            }}>글발행</button>
+
 
             {modal == true ? <Modal color={'yellow'} 글제목={글제목} 글제목변경={글제목변경} title={title}/> : null}
 
