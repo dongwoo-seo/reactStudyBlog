@@ -1,14 +1,18 @@
 import './App.css';
 import {Navbar, Container, Nav} from 'react-bootstrap';
-import {useState} from "react";
+import {createContext, useState} from "react";
 import data from "./data.js";
 import {Route, Routes, Link, useNavigate, Outlet} from "react-router-dom";
 import Detail from "./routes/Detail.js";
 import axios from 'axios';
 
+
+let Context1 = createContext(); // state 보관함
+
 function App() {
 
     let [shoes, setShoes] = useState(data);
+    let [재고, set재고] = useState([10, 11, 12]);
     let navigate = useNavigate();
 
     return (
@@ -41,14 +45,17 @@ function App() {
                         axios.get('https://codingapple1.github.io/shop/data2.json').then((data) => {
                             let copy = [...shoes, ...data.data];
                             setShoes(copy);
-                        }).catch(()=>{
+                        }).catch(() => {
                             console.log('실패');
                         })
                     }}>버튼
                     </button>
                 </>}/>
-                <Route path="/detail/:id" element={<Detail shoes={shoes}/>}/>
-
+                <Route path="/detail/:id" element={
+                    <Context1.Provider value={{재고, shoes}}>
+                        <Detail shoes={shoes}/>
+                    </Context1.Provider>}
+                />
             </Routes>
         </div>
     );
