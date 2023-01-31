@@ -5,15 +5,25 @@ import data from "./data.js";
 import {Route, Routes, Link, useNavigate, Outlet} from "react-router-dom";
 import Detail from "./routes/Detail.js";
 import axios from 'axios';
+import Cart from "./routes/Cart.js";
+import {useQuery} from "react-query";
 
+export let Context1 = createContext(); // state 보관함
 
-let Context1 = createContext(); // state 보관함
 
 function App() {
-
+    useState(() => {
+        localStorage.setItem('watched', JSON.stringify([]));
+    }, [])
     let [shoes, setShoes] = useState(data);
-    let [재고, set재고] = useState([10, 11, 12]);
+    let [재고] = useState([10, 11, 12]);
     let navigate = useNavigate();
+
+    let result = useQuery('작명', () =>
+        axios.get('https://codingapple1.github.io/userdata.json').then((a) => {
+            return a.data
+        })
+    )
 
     return (
         <div className="App">
@@ -25,9 +35,10 @@ function App() {
                             navigate('/')
                         }}>Home</Nav.Link>
                         <Nav.Link onClick={() => {
-                            navigate('/detail')
+                            navigate('/cart')
                         }}>Cart</Nav.Link>
                     </Nav>
+                    <Nav className="ms-auto">{ result.isLoading ? '로딩중' : result.data.name }</Nav>
                 </Container>
             </Navbar>
 
@@ -56,6 +67,9 @@ function App() {
                         <Detail shoes={shoes}/>
                     </Context1.Provider>}
                 />
+
+                <Route path="/cart" element={<Cart/>}/>
+
             </Routes>
         </div>
     );

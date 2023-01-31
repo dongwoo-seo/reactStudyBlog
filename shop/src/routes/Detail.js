@@ -1,12 +1,29 @@
 import {useParams} from "react-router-dom";
 import {Nav} from 'react-bootstrap';
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
+import { addCart } from "./../store.js";
+
+
+import {Context1} from './../App.js'
+import {useDispatch} from "react-redux";
 
 function Detail(props) {
     let {id} = useParams();
     let 찾는상품 = props.shoes.find(x => x.id == id);
     let [탭, 탭변경] = useState(0);
+    let dispatch = useDispatch();
+    let title  = 찾는상품.title;
 
+
+    useEffect(()=>{
+        let storage =  localStorage.getItem('watched');
+        storage = JSON.parse(storage);
+        storage.push(찾는상품.id);
+        storage = new Set(storage);
+        storage = Array.from(storage);
+        localStorage.setItem('watched',JSON.stringify(storage))
+
+    },[])
     return (
         <div className="container">
             <div className="row">
@@ -14,10 +31,10 @@ function Detail(props) {
                     <img src={"https://codingapple1.github.io/shop/shoes" + (찾는상품.id * 1 + 1) + ".jpg"} width="100%"/>
                 </div>
                 <div className="col-md-6 mt-4">
-                    <h4 className="pt-5">{찾는상품.title}</h4>
+                    <h4 className="pt-5">{title}</h4>
                     <p>{찾는상품.content}</p>
                     <p>{찾는상품.price}원</p>
-                    <button className="btn btn-danger">주문하기</button>
+                    <button className="btn btn-danger" onClick={()=>{dispatch(addCart({ id : 1, name : title, count : 1 }))}}>주문하기</button>
                 </div>
             </div>
 
@@ -46,6 +63,7 @@ function Detail(props) {
 
 function TabContent({탭}) {
     let [fade, setFade] = useState('')
+    let {재고} = useContext(Context1)
     useEffect(()=>{
         let a = setTimeout(()=>{setFade('end')},10)
 
